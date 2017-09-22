@@ -50,9 +50,8 @@ public class Measurement {
     }
 
     public static int measureBaseX(QuantumState state, int pos){
-        double[][] temp = Operation.performOperator(state,pos,Operators.Operator_H);
-        double[] st = Operation.vecToArray(temp);
-        state.setState(st);
+        Operation.performOperator(state,pos,Operators.Operator_H);
+
         return measureBaseZ(state,pos);
     }
 

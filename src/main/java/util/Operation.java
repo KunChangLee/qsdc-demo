@@ -52,7 +52,7 @@ public class Operation {
         return result;
     }
 
-    public static double[][] performOperator(QuantumState state, int pos, double[][] operator){
+    public static void performOperator(QuantumState state, int pos, double[][] operator){
         double[][] targetState = transposition(state.getState());
         double[][] temp = null;
         if(pos == 1)
@@ -68,7 +68,9 @@ public class Operation {
             }
         }
 
-        return innerProduct(temp,targetState);
+        double[][] result = innerProduct(temp,targetState);
+        state.setState(vecToArray(result));
+
 
     }
 
