@@ -7,6 +7,7 @@ import quantum.impl.ClusterState;
 import quantum.impl.ComputaionState;
 import quantum.impl.HardamadState;
 import receiver.Receiver;
+import sender.Sender;
 import util.*;
 
 import java.util.ArrayList;
@@ -20,9 +21,13 @@ import java.util.Random;
 public class Alice extends AbstractSender implements Receiver{
     private static Logger logger = LoggerFactory.getLogger(Alice.class);
     List<Integer> messageList = new ArrayList<Integer>();
+    private List<Sender> senders = new ArrayList<Sender>();
 
     private String message;
     private Map<String,List> payload = null;
+
+    private int[][] check1 = new int[][]{{1,4},{2,3}};
+    private int[][] check2 = new int[][]{{2,3},{1,4}};
 
     public void setMessage(String message) {
         this.message = message;
@@ -107,9 +112,7 @@ public class Alice extends AbstractSender implements Receiver{
         this.payload = payload;
         logger.info("Alice receive Charlie's sequence!");
         authentication(payload);
-
-
-
+        checkParticles(payload);
     }
 
     public void notified() {
@@ -176,4 +179,76 @@ public class Alice extends AbstractSender implements Receiver{
 
         }
     }
+
+    private void checkParticles(Map<String,List> payload){
+        logger.info("Alice start checking the cluster state...");
+        int extra = (Integer) payload.get(Payload.EXTRA).get(0);
+        int size = payload.get(Payload.IDC).size();
+        List<Integer> checks = new ArrayList<Integer>();
+        Random random = new Random();
+        List<QuantumState> temp = new ArrayList<QuantumState>();
+        List<QuantumState> sequence = payload.get(Payload.SEQUENCE);
+        List<String> ops = payload.get(Payload.CHARLIE_OPERATION_POS);
+        List<String> opsTemp = new ArrayList<String>();
+        int error = 0;
+        int count = extra;
+
+        while(count > 0){
+            int ran = random.nextInt(size);
+            if(!checks.contains(ran)){
+                checks.add(ran);
+                count -= 1;
+            }
+        }
+        for (Sender s : senders){
+            s.check(checks);
+        }
+
+        List<Integer> senderResults = payload.get(Payload.CHARLIE_CHECK_RESULT);
+        List<Integer> aliceResults = new ArrayList<Integer>();
+        List<Integer> bellResults = new ArrayList<Integer>();
+        List<String> charlieOp = new ArrayList<String>();
+
+        for (int i = 0; i < sequence.size(); i++) {
+            QuantumState state = sequence.get(i);
+            if(checks.contains(i)){
+                int zResult = Measurement.measureBaseZ(state,1);
+                int bellResult = Measurement.measureBaseBell(state);
+                aliceResults.add(zResult);
+                bellResults.add(bellResult);
+                charlieOp.add(ops.get(i));
+            }else {
+                temp.add(state);
+                opsTemp.add(ops.get(i));
+            }
+        }
+
+        for (int i = 0; i < senderResults.size(); i++) {
+            String op = charlieOp.get(i);
+            int real = 0;
+            int should = 0;
+            if(op.equals(Constant.OPERATION_I)){
+                real = bellResults.get(i);
+                should = check1[aliceResults.get(i)][senderResults.get(i)];
+            }else {
+                real = bellResults.get(i);
+                should = check2[aliceResults.get(i)][senderResults.get(i)];
+            }
+
+            if(real != should){
+                error += 1;
+            }
+        }
+        logger.info("Alice complete the state checking!");
+        logger.info("The error rate is {}",error*1.0/extra);
+
+
+        payload.put(Payload.SEQUENCE,temp);
+        payload.put(Payload.CHARLIE_OPERATION_POS,opsTemp);
+    }
+
+    public void addSender(Sender sender){
+        this.senders.add(sender);
+    }
+
 }

@@ -1,8 +1,9 @@
 package process.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import receiver.Receiver;
 import receiver.impl.Bob;
-import sender.Sender;
 import sender.impl.Alice;
 import sender.impl.Charlie;
 import util.Payload;
@@ -13,6 +14,8 @@ import java.util.*;
  * Created by Zhao Zhe on 2017/9/16.
  */
 public class MyProtocol extends AbastractProtocol {
+    private static Logger logger = LoggerFactory.getLogger(MyProtocol.class);
+
     private Map<String,List> payload = new HashMap<String, List>();
     private List<Integer> has = new ArrayList<Integer>(1);
 
@@ -27,7 +30,7 @@ public class MyProtocol extends AbastractProtocol {
     }
 
     private int extra;
-    private int message_lenth = 0;
+    private int message_length = 0;
     @Override
     public void authentication() {
         List<Integer> idc = generateIDC();
@@ -39,6 +42,7 @@ public class MyProtocol extends AbastractProtocol {
         Alice alice = new Alice();
         charlie.addReceiver(alice);
         charlie.addReceiver(bob);
+        alice.addSender(charlie);
 
         alice.setMessage(message);
         charlie.send(alice,payload);
@@ -51,9 +55,9 @@ public class MyProtocol extends AbastractProtocol {
 
     @Override
     public void process() {
-        String nMessage = formateMessage(message);
+        String nMessage = formatMessage(message);
         this.message = nMessage;
-        this.message_lenth = nMessage.length()/2;
+        this.message_length = nMessage.length()/2;
         authentication();
 
 
@@ -66,7 +70,15 @@ public class MyProtocol extends AbastractProtocol {
     private List<Integer> generateIDC(){
         Random random = new Random();
         List<Integer> list = new ArrayList<Integer>();
-        for (int i = 0; i < message_lenth+extra; i++) {
+        if(extra < 0){
+            logger.error("Extra particles must more than 0!");
+            System.exit(-1);
+        }else {
+            List<Integer> ex = new ArrayList<Integer>();
+            ex.add(extra);
+            payload.put(Payload.EXTRA,ex);
+        }
+        for (int i = 0; i < message_length+extra; i++) {
             int temp = random.nextInt(2);
             if(temp == 0)
                 list.add(0);
@@ -80,7 +92,7 @@ public class MyProtocol extends AbastractProtocol {
     private List<Integer> generateIDB(){
         Random random = new Random();
         List<Integer> list = new ArrayList<Integer>();
-        for (int i = 0; i < message_lenth; i++) {
+        for (int i = 0; i < message_length; i++) {
             int temp = random.nextInt(2);
             if(temp == 0)
                 list.add(0);
@@ -91,7 +103,7 @@ public class MyProtocol extends AbastractProtocol {
 
         return list;
     }
-    private String formateMessage(String message){
+    private String formatMessage(String message){
         int len = message.length();
         if(len % 2 == 1){
             has.add(1);

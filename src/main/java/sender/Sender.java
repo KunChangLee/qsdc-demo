@@ -10,4 +10,5 @@ import java.util.Map;
  */
 public interface Sender {
     void send(Receiver receiver, Map<String,List> payload);
+    void check(List<Integer> check);
 }

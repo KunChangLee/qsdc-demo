@@ -20,4 +20,8 @@ public abstract class AbstractSender implements Sender{
         prepareState(payload);
         doSend(receiver);
     }
+
+    public void check(List<Integer> check) {
+
+    }
 }

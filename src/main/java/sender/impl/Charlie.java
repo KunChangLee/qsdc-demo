@@ -126,6 +126,18 @@ public class Charlie extends AbstractSender {
             receiver.notified();
         }
     }
+    @Override
+    public void check(List<Integer> list){
+        Collections.sort(list);
+        List<QuantumState> sequence = payload.get(Payload.SEQUENCE);
+        List<Integer> results = new ArrayList<Integer>();
+        for (int i : list){
+            QuantumState state = sequence.get(i);
+            int result = Measurement.measureBaseZ(state,2);
+            results.add(result);
+        }
+        payload.put(Payload.CHARLIE_CHECK_RESULT,results);
+    }
 
 
 }

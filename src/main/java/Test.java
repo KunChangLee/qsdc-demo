@@ -21,8 +21,8 @@ public class Test {
     public static void main(String[] args) {
 
         MyProtocol protocol = new MyProtocol();
-        protocol.setExtra(0);
-        protocol.setMessage("10110010");
+        protocol.setExtra(5);
+        protocol.setMessage("10110010010100110101001010");
         protocol.process();
     }
 
