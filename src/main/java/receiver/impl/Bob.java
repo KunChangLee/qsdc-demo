@@ -22,9 +22,17 @@ public class Bob implements Receiver {
     private int[][][] decode2 = {{{1,0,2,3},{3,2,0,1}},{{0,1,3,2},{2,3,1,0}}};
 
 
+    public String getSecret() {
+        return message;
+    }
+
+    private String message = "";
+
+
     public void notified() {
 
         String secret = decode();
+        this.message = secret;
         logger.info("Bob's secret message is {}",secret);
     }
 

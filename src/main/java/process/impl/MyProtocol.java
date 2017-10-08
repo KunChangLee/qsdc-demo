@@ -6,6 +6,7 @@ import receiver.Receiver;
 import receiver.impl.Bob;
 import sender.impl.Alice;
 import sender.impl.Charlie;
+import util.MessageUtil;
 import util.Payload;
 
 import java.util.*;
@@ -18,19 +19,35 @@ public class MyProtocol extends AbastractProtocol {
 
     private Map<String,List> payload = new HashMap<String, List>();
     private List<Integer> has = new ArrayList<Integer>(1);
+    private List<Integer> encodeList = null;
+    private boolean isEncode = false;
+    private int extra;
+    private int message_length = 0;
+    private String message;
+    private String originalMessage;
+    private String secret = "";
+    private String binResult = "";
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMessage(String message, boolean flag) {
+        if(flag == true){
+            this.message = MessageUtil.encodeMessage(message);
+            this.encodeList = MessageUtil.getEncodeList();
+            this.isEncode = true;
+
+        }else {
+            this.message = message;
+        }
+        this.originalMessage = this.message;
+
     }
 
-    private String message;
+
 
     public void setExtra(int extra) {
         this.extra = extra;
     }
 
-    private int extra;
-    private int message_length = 0;
+
     @Override
     public void authentication() {
         List<Integer> idc = generateIDC();
@@ -38,7 +55,7 @@ public class MyProtocol extends AbastractProtocol {
         List<Integer> idb = generateIDB();
         payload.put(Payload.IDB,idb);
         Charlie charlie = new Charlie();
-        Receiver bob = new Bob();
+        Bob bob = new Bob();
         Alice alice = new Alice();
         charlie.addReceiver(alice);
         charlie.addReceiver(bob);
@@ -49,18 +66,30 @@ public class MyProtocol extends AbastractProtocol {
         alice.send(bob,payload);
 
         charlie.notifys();
+        this.secret = bob.getSecret();
+        this.binResult = secret;
 
 
     }
 
     @Override
     public void process() {
-        String nMessage = formatMessage(message);
+        long startTime = System.currentTimeMillis();
+        String nMessage = formatMessage(this.message);
         this.message = nMessage;
         this.message_length = nMessage.length()/2;
         authentication();
 
+        if(this.isEncode){
+            this.secret = MessageUtil.decodeMessage(secret,encodeList);
+        }
+        double errorRate = errorRate(this.originalMessage,this.binResult)*100;
+        logger.info("Bob's secret message is: {}",secret);
+        logger.info("The error rate is {}%.",String.format("%.2f",errorRate));
 
+
+        long dur = System.currentTimeMillis() - startTime;
+        logger.info("The protocol complete in {} ms!",String.format("%.2f",dur*0.1));
     }
 
     @Override
@@ -105,6 +134,7 @@ public class MyProtocol extends AbastractProtocol {
     }
     private String formatMessage(String message){
         int len = message.length();
+        has.clear();
         if(len % 2 == 1){
             has.add(1);
             message = "0"+message;
@@ -114,5 +144,16 @@ public class MyProtocol extends AbastractProtocol {
         payload.put(Payload.HAS_EXTRA,has);
 
         return message;
+    }
+
+    private double errorRate(String message,String secret){
+        int error = 0;
+        for (int i = 0; i < secret.length(); i++) {
+            char ch1 = message.charAt(i);
+            char ch2 = secret.charAt(i);
+            if(ch1 != ch2)
+                error += 1;
+        }
+        return error*0.1/secret.length();
     }
 }
