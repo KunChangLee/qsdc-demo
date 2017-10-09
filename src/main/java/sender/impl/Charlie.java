@@ -1,5 +1,7 @@
 package sender.impl;
 
+import attacker.Attack;
+import attacker.Attacker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quantum.QuantumState;
@@ -22,6 +24,7 @@ public class Charlie extends AbstractSender {
     private int message_lenth = 0;
     private Map<String,List> payload = new HashMap<String, List>();
     private List<Receiver> listener = new ArrayList<Receiver>();
+    private List<Attacker> attackers = new ArrayList<Attacker>();
 
     public String getName() {
         return name;
@@ -105,11 +108,17 @@ public class Charlie extends AbstractSender {
     protected void doSend(Receiver receiver) {
         logger.info("Charlie send the quantum sequence to Alice...");
 
+        for (Attacker attacker : attackers){
+            attacker.attack(payload);
+        }
         receiver.receive(payload);
     }
 
     public void addReceiver(Receiver receiver){
         this.listener.add(receiver);
+    }
+    public void addAttacker(Attacker attacker){
+        this.attackers.add(attacker);
     }
     public void notifys(){
         logger.info("Charlie allows Bob to recover the secret message");

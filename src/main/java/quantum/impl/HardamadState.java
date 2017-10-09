@@ -8,6 +8,7 @@ import util.Constant;
  */
 public class HardamadState implements QuantumState {
     private double[] state;
+    private int particles = 1;
 
     public HardamadState(int i){
         if(i == 0)
@@ -27,6 +28,10 @@ public class HardamadState implements QuantumState {
     }
 
     public int getParticles() {
-        return 1;
+        return this.particles;
+    }
+
+    public void setParticles(int num) {
+        this.particles = num;
     }
 }

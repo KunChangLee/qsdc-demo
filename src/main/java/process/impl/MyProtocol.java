@@ -1,8 +1,10 @@
 package process.impl;
 
+import attacker.Attack;
+import attacker.AttackStrategy;
+import attacker.Attacker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import receiver.Receiver;
 import receiver.impl.Bob;
 import sender.impl.Alice;
 import sender.impl.Charlie;
@@ -57,9 +59,13 @@ public class MyProtocol extends AbastractProtocol {
         Charlie charlie = new Charlie();
         Bob bob = new Bob();
         Alice alice = new Alice();
+        Attacker eave = new Attacker(AttackStrategy.ENTANGLE_AND_MEASURE);
+
+        charlie.addAttacker(eave);
         charlie.addReceiver(alice);
         charlie.addReceiver(bob);
         alice.addSender(charlie);
+        alice.addAttacker(eave);
 
         alice.setMessage(message);
         charlie.send(alice,payload);

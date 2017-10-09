@@ -1,5 +1,7 @@
 package sender.impl;
 
+import attacker.Attack;
+import attacker.Attacker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quantum.QuantumState;
@@ -22,6 +24,7 @@ public class Alice extends AbstractSender implements Receiver{
     private static Logger logger = LoggerFactory.getLogger(Alice.class);
     List<Integer> messageList = new ArrayList<Integer>();
     private List<Sender> senders = new ArrayList<Sender>();
+    private List<Attacker> attackers = new ArrayList<Attacker>();
 
     private String message;
     private Map<String,List> payload = null;
@@ -102,6 +105,9 @@ public class Alice extends AbstractSender implements Receiver{
     @Override
     protected void doSend(Receiver receiver) {
         logger.info("Alice send the sequence to Bob...");
+        for (Attacker attacker : attackers){
+            attacker.attack(payload);
+        }
         receiver.receive(payload);
     }
 
@@ -249,6 +255,9 @@ public class Alice extends AbstractSender implements Receiver{
 
     public void addSender(Sender sender){
         this.senders.add(sender);
+    }
+    public void addAttacker(Attacker attacker){
+        this.attackers.add(attacker);
     }
 
 }

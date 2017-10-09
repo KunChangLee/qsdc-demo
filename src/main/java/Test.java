@@ -20,14 +20,7 @@ public class Test {
     private static Logger logger = LoggerFactory.getLogger(Test.class);
     public static void main(String[] args) {
 
-        MyProtocol protocol = new MyProtocol();
-        protocol.setExtra(5);
-        protocol.setMessage("你好啊！hello world!",true);
-        protocol.process();
 
-        System.out.println();
-        protocol.setMessage("我爱北京,I love Beijing!",true);
-        protocol.process();
     }
 
 

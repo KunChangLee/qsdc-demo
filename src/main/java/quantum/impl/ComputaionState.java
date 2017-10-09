@@ -8,6 +8,7 @@ import quantum.QuantumState;
 public class ComputaionState implements QuantumState{
 
     private double[] state;
+    private int particles = 1;
 
     public ComputaionState(int i){
         if(i == 0)
@@ -25,6 +26,10 @@ public class ComputaionState implements QuantumState{
     }
 
     public int getParticles() {
-        return 1;
+        return this.particles;
+    }
+
+    public void setParticles(int num) {
+        this.particles = num;
     }
 }
