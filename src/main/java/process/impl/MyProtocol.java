@@ -1,6 +1,5 @@
 package process.impl;
 
-import attacker.Attack;
 import attacker.AttackStrategy;
 import attacker.Attacker;
 import org.slf4j.Logger;
@@ -31,7 +30,7 @@ public class MyProtocol extends AbastractProtocol {
     private String binResult = "";
 
     public void setMessage(String message, boolean flag) {
-        if(flag == true){
+        if(flag){
             this.message = MessageUtil.encodeMessage(message);
             this.encodeList = MessageUtil.getEncodeList();
             this.isEncode = true;

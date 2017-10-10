@@ -2,6 +2,8 @@ package util;
 
 import quantum.QuantumState;
 import quantum.impl.ClusterState;
+import quantum.impl.ComputaionState;
+import quantum.impl.EaveState;
 
 /**
  * Created by Zhao Zhe on 2017/9/9.
@@ -112,17 +114,24 @@ public class Operation {
         return result;
     }
 
-    public static void entangleAttack(QuantumState target, QuantumState eave){
+    public static void entangleAttack(QuantumState target, QuantumState eave, double alpha, double gama){
         double[][] targetState = transposition(target.getState());
         double[][] eaveState = transposition(eave.getState());
 
         if(!(target instanceof ClusterState)){
             double[][] temp = operatorTensor(targetState,eaveState);
-            double[][] op = operatorTensor(Operators.Operator_I,Operators.Operator_I);
-            temp = innerProduct(Operators.Operator_E,temp);
+            //double[][] op = operatorTensor(Operators.Operator_I,Operators.Operator_I);
+            if(eave instanceof ComputaionState){
+                temp = innerProduct(Operators.getOperator_E(alpha,gama),temp);
+                target.setParticles(2);
+            }else if(eave instanceof EaveState){
+                temp = innerProduct(Operators.getOperator_E2(alpha,gama),temp);
+                target.setParticles(3);
+            }
+
             //temp = innerProduct(operatorTensor(op,Operators.Operator_I),temp);
+
             target.setState(vecToArray(temp));
-            target.setParticles(3);
         }
     }
 
