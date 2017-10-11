@@ -8,6 +8,7 @@ import quantum.impl.ComputaionState;
 import util.Measurement;
 import util.Operation;
 import util.Operators;
+import view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class Test {
     private static Logger logger = LoggerFactory.getLogger(Test.class);
     public static void main(String[] args) {
 
+        View.init();
 
     }
 

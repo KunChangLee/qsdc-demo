@@ -23,7 +23,7 @@ public class Attack {
             if(!(state instanceof ClusterState)){
                 QuantumState eaveState = new EaveState();
                 eaveState = new ComputaionState(0);
-                Operation.entangleAttack(state,eaveState,Math.sqrt(0.9),Math.sqrt(0.1));
+                Operation.entangleAttack(state,eaveState,Math.sqrt(0.5),Math.sqrt(0.5));
 
             }
         }

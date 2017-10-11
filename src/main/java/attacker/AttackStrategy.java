@@ -5,4 +5,5 @@ package attacker;
  */
 public class AttackStrategy {
     public static final String ENTANGLE_AND_MEASURE = "entangel_and_measure";
+    public static final String NONE = "none";
 }

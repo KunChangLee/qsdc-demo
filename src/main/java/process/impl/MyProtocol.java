@@ -28,6 +28,26 @@ public class MyProtocol extends AbastractProtocol {
     private String originalMessage;
     private String secret = "";
     private String binResult = "";
+    private double threshold = 0;
+    private boolean isIdeal = true;
+    private String[] strategy;
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setThreshold(double threshold) {
+
+        this.threshold = threshold;
+    }
+
+    public void setIdeal(boolean ideal) {
+        isIdeal = ideal;
+    }
+
+    public void setStrategy(String[] strategy) {
+        this.strategy = strategy;
+    }
 
     public void setMessage(String message, boolean flag) {
         if(flag){
