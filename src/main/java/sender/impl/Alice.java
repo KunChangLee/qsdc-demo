@@ -25,6 +25,9 @@ public class Alice extends AbstractSender implements Receiver{
     List<Integer> messageList = new ArrayList<Integer>();
     private List<Sender> senders = new ArrayList<Sender>();
     private List<Attacker> attackers = new ArrayList<Attacker>();
+    private double errorRate = 0;
+    private double errorRate2 = 0;
+    private double threshold = 0;
 
     private String message;
     private Map<String,List> payload = null;
@@ -35,7 +38,17 @@ public class Alice extends AbstractSender implements Receiver{
     public void setMessage(String message) {
         this.message = message;
     }
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
 
+    public double getErrorRate() {
+        return errorRate;
+    }
+
+    public double getErrorRate2() {
+        return errorRate2;
+    }
 
     @Override
     protected void prepareState(Map<String, List> payload) {
@@ -117,7 +130,8 @@ public class Alice extends AbstractSender implements Receiver{
     public void receive(Map<String, List> payload) {
         this.payload = payload;
         logger.info("Alice receive Charlie's sequence!");
-        authentication(payload);
+        if(!authentication(payload))
+            return;
         checkParticles(payload);
     }
 
@@ -132,7 +146,7 @@ public class Alice extends AbstractSender implements Receiver{
         payload.put(Payload.ALICE_RESULT,result);
     }
 
-    private void authentication(Map<String, List> payload){
+    private boolean authentication(Map<String, List> payload){
         List<QuantumState> sequence = payload.get(Payload.SEQUENCE);
         List<Integer> idc = payload.get(Payload.IDC);
         List<Integer> mc2 = new ArrayList<Integer>();
@@ -166,8 +180,15 @@ public class Alice extends AbstractSender implements Receiver{
             if(mc2_res != mc_res)
                 error += 1;
         }
-        logger.info("The error rate is {}",error*1.0/mc.size());
+        this.errorRate = error*1.0/mc.size();
+        logger.info("The error rate is {}%",String.format("%.2f",error*100.0/mc.size()));
+        if(errorRate > threshold){
+            logger.info("The error rate is over threshold, the communication is abort!");
+            return false;
+        }
+
         payload.put(Payload.SEQUENCE,temp);
+        return true;
 
 
     }
@@ -245,8 +266,14 @@ public class Alice extends AbstractSender implements Receiver{
                 error += 1;
             }
         }
+        double rate = error*1.0/extra;
+        this.errorRate2 = rate;
         logger.info("Alice complete the state checking!");
-        logger.info("The error rate is {}",error*1.0/extra);
+        logger.info("The error rate is {}%",String.format("%.2f",error*100.0/extra));
+        if(errorRate2 > threshold){
+            logger.info("Charlie prepared fake entangled states!Abort the communication!");
+            return;
+        }
 
 
         payload.put(Payload.SEQUENCE,temp);

@@ -1,5 +1,6 @@
 package process.impl;
 
+import attacker.Attack;
 import attacker.AttackStrategy;
 import attacker.Attacker;
 import org.slf4j.Logger;
@@ -31,6 +32,13 @@ public class MyProtocol extends AbastractProtocol {
     private double threshold = 0;
     private boolean isIdeal = true;
     private String[] strategy;
+    private double c2aError;
+    private double c2aError2;
+    private double a2bError;
+    private boolean abort = false;
+    private Alice alice = new Alice();
+    private Charlie charlie = new Charlie();
+    private Bob bob = new Bob();
 
     public String getSecret() {
         return secret;
@@ -75,20 +83,43 @@ public class MyProtocol extends AbastractProtocol {
         payload.put(Payload.IDC,idc);
         List<Integer> idb = generateIDB();
         payload.put(Payload.IDB,idb);
-        Charlie charlie = new Charlie();
-        Bob bob = new Bob();
-        Alice alice = new Alice();
-        Attacker eave = new Attacker(AttackStrategy.ENTANGLE_AND_MEASURE);
+        charlie = new Charlie();
+        bob = new Bob();
+        alice = new Alice();
+        for (int i = 0; i < strategy.length; i++) {
+            String str = strategy[i];
 
-        charlie.addAttacker(eave);
+            if(strategy.equals(AttackStrategy.NONE))
+                continue;
+            Attacker eave = new Attacker(str);
+            charlie.addAttacker(eave);
+            alice.addAttacker(eave);
+        }
+
+
+
         charlie.addReceiver(alice);
         charlie.addReceiver(bob);
         alice.addSender(charlie);
-        alice.addAttacker(eave);
+
 
         alice.setMessage(message);
+        alice.setThreshold(threshold);
+        bob.setThreshold(threshold);
         charlie.send(alice,payload);
+        this.c2aError = alice.getErrorRate();
+        this.c2aError2 = alice.getErrorRate2();
+        if(c2aError2 > threshold || c2aError > threshold){
+            this.abort = true;
+            return;
+        }
         alice.send(bob,payload);
+        this.a2bError = bob.getErrorRate();
+        if(a2bError > threshold){
+            this.abort = true;
+            return;
+        }
+
 
         charlie.notifys();
         this.secret = bob.getSecret();
@@ -104,6 +135,9 @@ public class MyProtocol extends AbastractProtocol {
         this.message = nMessage;
         this.message_length = nMessage.length()/2;
         authentication();
+        if(abort)
+            return;
+
 
         if(this.isEncode){
             this.secret = MessageUtil.decodeMessage(secret,encodeList);

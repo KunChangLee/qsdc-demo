@@ -18,12 +18,22 @@ import java.util.Map;
 public class Bob implements Receiver {
     private static Logger logger = LoggerFactory.getLogger(Bob.class);
     private Map<String,List> payload = null;
+    private double threshold = 0;
+    private double errorRate = 0;
     private int[][][] decode1 = {{{0,1,3,2},{2,3,1,0}},{{1,0,2,3},{3,2,0,1}}};
     private int[][][] decode2 = {{{1,0,2,3},{3,2,0,1}},{{0,1,3,2},{2,3,1,0}}};
 
 
     public String getSecret() {
         return message;
+    }
+
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+
+    public double getErrorRate() {
+        return errorRate;
     }
 
     private String message = "";
@@ -76,7 +86,12 @@ public class Bob implements Receiver {
             if(mc2_res != mc_res)
                 error += 1;
         }
-        logger.info("The error rate is {}",error*1.0/mb.size());
+        logger.info("The error rate is {}%",String.format("%.2f",error*100.0/mb.size()));
+        this.errorRate = error*1.0/mb.size();
+        if(errorRate > threshold){
+            logger.info("The error rate is over threshold, the communication is abort!");
+            return;
+        }
         payload.put(Payload.SEQUENCE,temp);
     }
     private String decode(){

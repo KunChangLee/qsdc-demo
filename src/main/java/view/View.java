@@ -49,6 +49,7 @@ public class View {
         group.add(radio2);
 
         radio1.setSelected(true);
+        logText.setEditable(false);
 
         card = new CardLayout();
         panel12.setLayout(card);
@@ -59,8 +60,6 @@ public class View {
 
         radio1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                logText.setText(radio1.getText());
-                //panel12.removeAll();
                 card.first(panel12);
                 communicationMode = true;
 
@@ -68,9 +67,7 @@ public class View {
         });
         radio2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //panel12.removeAll();
                 card.last(panel12);
-                logText.setText(radio2.getText());
                 communicationMode = false;
 
             }
@@ -117,7 +114,7 @@ public class View {
     }
 
     public static void init() {
-        JFrame frame = new JFrame("View");
+        JFrame frame = new JFrame("量子安全直接通信仿真系统");
         frame.setResizable(false);
         frame.setLocation(200,50);
         frame.setContentPane(new View().panels);
