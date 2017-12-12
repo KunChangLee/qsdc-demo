@@ -22,6 +22,7 @@ public class Test {
     public static void main(String[] args) {
 
         View.init();
+        //View.analysize();
 
     }
 

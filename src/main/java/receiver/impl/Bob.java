@@ -20,6 +20,7 @@ public class Bob implements Receiver {
     private Map<String,List> payload = null;
     private double threshold = 0;
     private double errorRate = 0;
+    private boolean isIdeal = true;
     private int[][][] decode1 = {{{0,1,3,2},{2,3,1,0}},{{1,0,2,3},{3,2,0,1}}};
     private int[][][] decode2 = {{{1,0,2,3},{3,2,0,1}},{{0,1,3,2},{2,3,1,0}}};
 
@@ -30,6 +31,10 @@ public class Bob implements Receiver {
 
     public void setThreshold(double threshold) {
         this.threshold = threshold;
+    }
+
+    public void setIdeal(boolean ideal) {
+        isIdeal = ideal;
     }
 
     public double getErrorRate() {
@@ -67,13 +72,27 @@ public class Bob implements Receiver {
             if(idb.get(i) == 0){
                 state = sequence.get(2*i+1);
                 temp.add(sequence.get(2*i));
-                int result = Measurement.measureBaseZ(state,1);
+                int result;
+                if (isIdeal){
+                    result = Measurement.measureBaseZ(state,1);
+
+                }else {
+                    result = Measurement.logicMeasureBaseZ(state,1);
+
+                }
                 mc2.add(result);
 
             }else {
                 state = sequence.get(2*i);
                 temp.add(sequence.get(2*i+1));
-                int result = Measurement.measureBaseX(state,1);
+                int result;
+                if (isIdeal){
+                    result = Measurement.measureBaseX(state,1);
+
+                }else {
+                    result = Measurement.logicMeasureBaseX(state,1);
+
+                }
                 mc2.add(result);
 
             }
@@ -108,7 +127,14 @@ public class Bob implements Receiver {
             String ope = operator.get(i);
             int charlie = charlies.get(i);
             int alice = alices.get(i);
-            int measure = Measurement.measureBaseBell(state);
+            int measure;
+            if(isIdeal){
+                measure = Measurement.measureBaseBell(state);
+
+            }else {
+                measure = Measurement.logicMeasureBaseBell(state);
+
+            }
             int result;
             if(ope.equals(Constant.OPERATION_I)){
                 result = decode1[alice][charlie][measure-1];

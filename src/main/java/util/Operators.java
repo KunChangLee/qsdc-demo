@@ -31,8 +31,9 @@ public class Operators {
             {SQURT2,0,0, SQURT2},
             {0,SQURT2, SQURT2,0},
             {SQURT2,0,0, -SQURT2},
-            {0,SQURT2, -SQURT2,0},
+            {0,SQURT2, -SQURT2,0}
     };
+
 
     public static double[][] getOperator_E(double alpha, double gama){
 
@@ -43,6 +44,17 @@ public class Operators {
                 {0,0, gama,0},
                 {0,0,delta,0},
                 {beta,0, 0,0},
+
+        };
+        return op;
+    }
+    public static double[][] getOperator_N(double cos){
+
+        double sin = Math.sqrt(1.0 - cos*cos);
+        double[][] op = new double[][]{
+                {cos,-sin},
+                {sin, cos},
+
 
         };
         return op;
@@ -65,8 +77,34 @@ public class Operators {
         return op;
     }
 
-
-
+    public static double[][] Logic_I = Operation.operatorTensor(Operator_I,Operator_I);
+    public static double[][] Logic_X = Operation.operatorTensor(Operator_Z,Operator_X);
+    public static double[][] Logic_Y = Operation.operatorTensor(Operator_I,Operator_iY);
+    public static double[][] Logic_Z = Operation.operatorTensor(Operator_Z,Operator_Z);
+    public static double[][] Logic_H = new double[][]{
+            {SQURT2,SQURT2,0,0},
+            {0,0,SQURT2,SQURT2},
+            {0,0,-SQURT2,-SQURT2},
+            {SQURT2,SQURT2,0,0}
+    };
+    public static final double[][] Logic_U = new double[][]{
+            {SQURT2,0,0,0,0, SQURT2,0,0,0,0,0,0,0,0,0,0},
+            {0,SQURT2,0,0, SQURT2,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,SQURT2,0,0,0,0,0, SQURT2,0,0,0,0,0,0,0},
+            {SQURT2,0,0,0,0,SQURT2,0,0,0,0,0,0,0,0,0,0},
+            {SQURT2,0,0,0,0,0,SQURT2,0,0,0,0,0,0,0,0,0},
+            {0,SQURT2,0,0,0,0,0,0,SQURT2,0,0,0,0,0,0,0},
+            {0,0,SQURT2,0,SQURT2,0,0,0,0,0,0,0,0,0,0,0},
+            {SQURT2,0,0,0,0,0,SQURT2,0,0,0,0,0,0,0,0,0},
+            {-SQURT2,0,0,0,0,SQURT2,0,0,0,0,0,0,0,0,0,0},
+            {0,0,SQURT2,0,SQURT2,0,0,0,0,0,0,0,0,0,0,0},
+            {0,SQURT2,0,0,0,0,0,0,SQURT2,0,0,0,0,0,0,0},
+            {-SQURT2,0,0,0,0,SQURT2,0,0,0,0,0,0,0,0,0,0},
+            {SQURT2,0,0,0,0, SQURT2,0,0,0,0,0,0,0,0,0,0},
+            {0,SQURT2,0,0, SQURT2,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,SQURT2,0,0,0,0,0, SQURT2,0,0,0,0,0,0,0},
+            {SQURT2,0,0,0,0,SQURT2,0,0,0,0,0,0,0,0,0,0},
+    };
 
 
 }

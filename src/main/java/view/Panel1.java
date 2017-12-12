@@ -26,8 +26,16 @@ public class Panel1 {
     private JTextField textReceivMess;
     private JLabel labelSend;
     private JLabel labelReceive;
+    private JLabel errorLabel1;
+    private JLabel errorLabel2;
 
     private boolean isIdeal = true;
+
+    public void setError(double[] error) {
+        errorLabel1.setText(String.format("%.2f",error[0]*100.0)+"%");
+        errorLabel2.setText(String.format("%.2f",error[1]*100.0)+"%");
+    }
+
     private String[] strategy = new String[]{AttackStrategy.NONE, AttackStrategy.ENTANGLE_AND_MEASURE};
 
     public Panel1() {

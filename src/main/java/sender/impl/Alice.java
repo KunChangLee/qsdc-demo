@@ -5,9 +5,7 @@ import attacker.Attacker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quantum.QuantumState;
-import quantum.impl.ClusterState;
-import quantum.impl.ComputaionState;
-import quantum.impl.HardamadState;
+import quantum.impl.*;
 import receiver.Receiver;
 import sender.Sender;
 import util.*;
@@ -28,6 +26,16 @@ public class Alice extends AbstractSender implements Receiver{
     private double errorRate = 0;
     private double errorRate2 = 0;
     private double threshold = 0;
+    private double cos;
+    private boolean isIdeal = true;
+
+    public void setIdeal(boolean ideal) {
+        isIdeal = ideal;
+    }
+
+    public void setCos(double cos) {
+        this.cos = cos;
+    }
 
     private String message;
     private Map<String,List> payload = null;
@@ -54,6 +62,16 @@ public class Alice extends AbstractSender implements Receiver{
     protected void prepareState(Map<String, List> payload) {
         messageList(message);
         logger.info("Alice is prepare sequence for message sending...");
+        if(isIdeal){
+            prepareNormState(payload);
+        }else {
+            prepareLogicState(payload);
+        }
+
+        logger.info("Alice complete encode!");
+
+    }
+    private void prepareNormState(Map<String,List> payload){
         List<QuantumState> sequence = payload.get(Payload.SEQUENCE);
         List<QuantumState> newSequence = new ArrayList<QuantumState>();
         List<Integer> idb = payload.get(Payload.IDB);
@@ -111,8 +129,65 @@ public class Alice extends AbstractSender implements Receiver{
         }
         payload.put(Payload.SEQUENCE,newSequence);
         payload.put(Payload.MB,mb);
-        logger.info("Alice complete encode!");
+    }
+    private void prepareLogicState(Map<String,List> payload){
+        List<QuantumState> sequence = payload.get(Payload.SEQUENCE);
+        List<QuantumState> newSequence = new ArrayList<QuantumState>();
+        List<Integer> idb = payload.get(Payload.IDB);
+        List<Integer> mb = new ArrayList<Integer>();
+        Random random = new Random();
 
+        for (int i = 0; i < messageList.size(); i++) {
+
+            int operator = messageList.get(i);
+            QuantumState state = sequence.get(i);
+            switch (operator){
+                case 0:
+                    break;
+                case 1:
+                    Operation.performLogicOperator(state,4,Operators.Logic_X);
+                    break;
+                case 2:
+                    Operation.performLogicOperator(state,4,Operators.Logic_Y);
+                    break;
+                case 3:
+                    Operation.performLogicOperator(state,4,Operators.Logic_Z);
+                    break;
+
+            }
+
+
+
+            int id = idb.get(i);
+            int pos = random.nextInt(2);
+            QuantumState decoy;
+            if(id == 0){
+                if(pos == 0){
+                    decoy = new BellState(1);
+                    mb.add(0);
+                }
+                else{
+                    decoy = new BellState(4);
+                    mb.add(1);
+                }
+                newSequence.add(state);
+                newSequence.add(decoy);
+            }else {
+                if (pos == 0){
+                    decoy = new LogicHardamadState(0);
+                    mb.add(0);
+                }
+                else{
+                    decoy = new LogicHardamadState(1);
+                    mb.add(1);
+                }
+                newSequence.add(decoy);
+                newSequence.add(state);
+            }
+
+        }
+        payload.put(Payload.SEQUENCE,newSequence);
+        payload.put(Payload.MB,mb);
     }
 
     @Override
@@ -121,6 +196,7 @@ public class Alice extends AbstractSender implements Receiver{
         for (Attacker attacker : attackers){
             attacker.attack(payload);
         }
+        Attack.noises(payload,cos);
         receiver.receive(payload);
     }
 
@@ -140,7 +216,12 @@ public class Alice extends AbstractSender implements Receiver{
         List<QuantumState> sequence = payload.get(Payload.SEQUENCE);
         List<Integer> result = new ArrayList<Integer>();
         for(QuantumState state : sequence){
-            int measure = Measurement.measureBaseZ(state,1);
+            int measure;
+            if(isIdeal){
+                measure = Measurement.measureBaseZ(state,1);
+            }else {
+                measure = Measurement.logicMeasureBaseZ(state, 1);
+            }
             result.add(measure);
         }
         payload.put(Payload.ALICE_RESULT,result);
@@ -161,13 +242,23 @@ public class Alice extends AbstractSender implements Receiver{
             if(idc.get(i) == 0){
                 state = sequence.get(2*i+1);
                 temp.add(sequence.get(2*i));
-                int result = Measurement.measureBaseZ(state,1);
+                int result;
+                if(isIdeal){
+                    result = Measurement.measureBaseZ(state,1);
+                }else {
+                    result = Measurement.logicMeasureBaseZ(state,1);
+                }
                 mc2.add(result);
 
             }else {
                 state = sequence.get(2*i);
                 temp.add(sequence.get(2*i+1));
-                int result = Measurement.measureBaseX(state,1);
+                int result;
+                if(isIdeal){
+                    result = Measurement.measureBaseX(state,1);
+                }else {
+                    result = Measurement.logicMeasureBaseX(state,1);
+                }
                 mc2.add(result);
 
             }
@@ -239,8 +330,17 @@ public class Alice extends AbstractSender implements Receiver{
         for (int i = 0; i < sequence.size(); i++) {
             QuantumState state = sequence.get(i);
             if(checks.contains(i)){
-                int zResult = Measurement.measureBaseZ(state,1);
-                int bellResult = Measurement.measureBaseBell(state);
+                int zResult;
+                int bellResult;
+                if(isIdeal){
+                    zResult = Measurement.measureBaseZ(state,1);
+                    bellResult = Measurement.measureBaseBell(state);
+                }else {
+                    zResult = Measurement.logicMeasureBaseZ(state,1);
+                    bellResult = Measurement.logicMeasureBaseBell(state);
+                }
+
+
                 aliceResults.add(zResult);
                 bellResults.add(bellResult);
                 charlieOp.add(ops.get(i));

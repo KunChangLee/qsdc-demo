@@ -10,6 +10,35 @@ import quantum.impl.EaveState;
  */
 public class Operation {
 
+    public static double[][] add(double[][] operator1,double[][] operator2){
+        for (int i = 0; i < operator1.length; i++) {
+            for (int j = 0; j < operator1[0].length; j++) {
+                operator1[i][j] += operator2[i][j];
+            }
+
+        }
+        return operator1;
+    }
+    public static double[][] sub(double[][] operator1,double[][] operator2){
+        for (int i = 0; i < operator1.length; i++) {
+            for (int j = 0; j < operator1[0].length; j++) {
+                operator1[i][j] -= operator2[i][j];
+            }
+
+        }
+        return operator1;
+    }
+
+    public static double[][] multiple(double factor,double[][] operator){
+        for (int i = 0; i < operator.length; i++) {
+            for (int j = 0; j < operator[0].length; j++) {
+                operator[i][j] = factor*operator[i][j];
+            }
+
+        }
+        return operator;
+    }
+
     public static double[][] operatorTensor(double[][] operator1,double[][] operator2){
         int row1 = operator1.length;
         int row2 = operator2.length;
@@ -76,6 +105,32 @@ public class Operation {
 
 
     }
+    public static void performLogicOperator(QuantumState state, int pos, double[][] operator){
+        double[][] targetState = transposition(state.getState());
+        double[][] temp = null;
+        pos = 2*pos - 1;
+        if(pos == 1)
+            temp = operator;
+        else
+            temp = Operators.Operator_I;
+        for (int i = 2; i <= state.getParticles(); i++) {
+            if(pos == 1 && i == 2){
+
+                continue;
+            }
+
+            if(i != pos){
+                temp = Operation.operatorTensor(temp,Operators.Operator_I);
+            }else {
+                temp = Operation.operatorTensor(temp,operator);
+                i += 1;
+            }
+        }
+
+        double[][] result = innerProduct(temp,targetState);
+        state.setState(vecToArray(result));
+
+    }
 
 
     public static void normalization(double[] matrix){
@@ -133,6 +188,11 @@ public class Operation {
 
             target.setState(vecToArray(temp));
         }
+    }
+
+    public static void noise(QuantumState target, double cos, int pos){
+        double[][] operator = Operators.getOperator_N(cos);
+        performOperator(target,pos,operator);
     }
 
 

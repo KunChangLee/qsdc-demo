@@ -11,14 +11,10 @@ public class Measurement {
         double[] states = state.getState();
 
         double zeroProb = 0.0;
-        double oneProb = 0.0;
         for (int i = 0; i < states.length; i++) {
-            if(isBitOne(i,pos,state.getParticles())){
-                oneProb += Math.pow(states[i],2);
-            }else {
-                zeroProb += Math.pow(states[i],2);
+            if(isBitZero(i,pos,state.getParticles())){
+               zeroProb += Math.pow(states[i],2);
             }
-
         }
         double random = Math.random();
         int result = 0;
@@ -49,6 +45,34 @@ public class Measurement {
         return result;
     }
 
+    public static int logicMeasureBaseZ(QuantumState state, int pos){
+        //double[][] temp = Operation.operatorTensor(Operators.Operator_I,Operators.Operator_I);
+        //temp = Operation.operatorTensor(temp,Operators.Operator_U);
+        Operation.performLogicOperator(state, pos, Operators.Operator_U);
+        //double[] st = state.getState();
+        ////double[][] temp = Operation.innerProduct(temp,Operation.transposition(st));
+        ////st = Operation.vecToArray(temp);
+        //state.setState(st);
+
+        int p3 = measureBaseZ(state,2*pos-1);
+        int p4 = measureBaseZ(state,2*pos);
+
+        int result = 0;
+
+        if(p3 == 0 && p4 == 0){
+            result = 0;
+        }else {
+            result = 1;
+        }
+
+        return result;
+    }
+    public static int logicMeasureBaseX(QuantumState state, int pos){
+        Operation.performLogicOperator(state,pos,Operators.Logic_H);
+
+        return logicMeasureBaseZ(state,pos);
+    }
+
     public static int measureBaseX(QuantumState state, int pos){
         Operation.performOperator(state,pos,Operators.Operator_H);
 
@@ -71,6 +95,35 @@ public class Measurement {
 
         int p3 = measureBaseZ(state,3);
         int p4 = measureBaseZ(state,4);
+
+        int result = 0;
+
+        if(p3 == 0){
+            if(p4 == 0)
+                result = 1;
+            else
+                result = 2;
+        }else {
+            if(p4 == 0)
+                result = 3;
+            else
+                result = 4;
+        }
+
+        return result;
+    }
+    public static int logicMeasureBaseBell(QuantumState state){
+        double[][] temp = Operation.operatorTensor(Operators.Operator_I,Operators.Operator_I);
+        temp = Operation.operatorTensor(temp,Operators.Operator_I);
+        temp = Operation.operatorTensor(temp,Operators.Operator_I);
+        temp = Operation.operatorTensor(temp,Operators.Logic_U);
+        double[] st = state.getState();
+        temp = Operation.innerProduct(temp,Operation.transposition(st));
+        st = Operation.vecToArray(temp);
+        state.setState(st);
+
+        int p3 = logicMeasureBaseZ(state,3);
+        int p4 = logicMeasureBaseZ(state,4);
 
         int result = 0;
 

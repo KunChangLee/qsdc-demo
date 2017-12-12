@@ -24,6 +24,7 @@ public class MyProtocol extends AbastractProtocol {
     private List<Integer> encodeList = null;
     private boolean isEncode = false;
     private int extra;
+    private double cos;
     private int message_length = 0;
     private String message;
     private String originalMessage;
@@ -40,8 +41,18 @@ public class MyProtocol extends AbastractProtocol {
     private Charlie charlie = new Charlie();
     private Bob bob = new Bob();
 
+    public void setCos(double cos) {
+        this.cos = cos;
+    }
+
     public String getSecret() {
         return secret;
+    }
+    public double[] getError(){
+        double[] error = new double[2];
+        error[0] = c2aError;
+        error[1] = a2bError;
+        return error;
     }
 
     public void setThreshold(double threshold) {
@@ -86,6 +97,11 @@ public class MyProtocol extends AbastractProtocol {
         charlie = new Charlie();
         bob = new Bob();
         alice = new Alice();
+        charlie.setIdeal(isIdeal);
+        alice.setIdeal(isIdeal);
+        bob.setIdeal(isIdeal);
+        charlie.setCos(cos);
+        alice.setCos(cos);
         for (int i = 0; i < strategy.length; i++) {
             String str = strategy[i];
 

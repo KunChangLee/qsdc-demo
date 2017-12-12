@@ -1,6 +1,7 @@
 package view;
 
 import attacker.AttackStrategy;
+import chart.TimeSeriesChart;
 import process.impl.MyProtocol;
 import util.TextAppender;
 
@@ -9,6 +10,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by Zhao Zhe on 2017/10/10.
@@ -124,6 +127,35 @@ public class View {
         frame.setVisible(true);
     }
 
+    public static void analysize(){
+        List<Double> data = new ArrayList();
+        List<Double> result1 = new ArrayList<Double>();
+        List<Double> result2 = new ArrayList<Double>();
+
+        for (double i = 0.0; i <= 1.0; i+=0.1) {
+            MyProtocol protocol = new MyProtocol();
+            protocol.setThreshold(2);
+            protocol.setMessage("北京邮电大学",true);
+            protocol.setIdeal(true);
+            protocol.setExtra(50);
+            protocol.setCos(i);
+            protocol.setStrategy(new String[]{AttackStrategy.NONE});
+
+            protocol.process();
+            double[] error =  protocol.getError();
+            data.add(i);
+            result1.add(error[0]);
+            result2.add(error[1]);
+        }
+
+        Map<String,List<Double>> map = new HashMap<String, List<Double>>();
+        map.put("data",data);
+        map.put("result1",result1);
+        map.put("result2",result2);
+        TimeSeriesChart chart = new TimeSeriesChart(map);
+
+    }
+
     public void startCommunication(){
         MyProtocol protocol = new MyProtocol();
         logText.setText("");
@@ -131,11 +163,13 @@ public class View {
         protocol.setIdeal(this.isIdeal);
         protocol.setMessage(this.message,true);
         protocol.setThreshold(this.threshold);
+        protocol.setCos(0.3);
         protocol.setStrategy(new String[]{this.strategy});
 
         protocol.process();
         String secret = protocol.getSecret();
         panels1.setSecret(secret);
+        panels1.setError(protocol.getError());
 
     }
 
