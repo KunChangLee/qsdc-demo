@@ -196,7 +196,7 @@ public class Alice extends AbstractSender implements Receiver{
         for (Attacker attacker : attackers){
             attacker.attack(payload);
         }
-        Attack.noises(payload,cos);
+        //Attack.noises(payload,cos);
         receiver.receive(payload);
     }
 

@@ -193,7 +193,7 @@ public class Charlie extends AbstractSender {
         for (Attacker attacker : attackers){
             attacker.attack(payload);
         }
-        Attack.noises(payload,cos);
+        //Attack.noises(payload,cos);
         receiver.receive(payload);
     }
 

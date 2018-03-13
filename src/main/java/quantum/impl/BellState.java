@@ -13,16 +13,16 @@ public class BellState implements QuantumState {
     public BellState(int i){
         switch (i){
             case 1:
-                this.state = new double[]{Constant.SQURT2,0,0,Constant.SQURT2};
+                this.state = new double[]{Constant.SQRT2,0,0,Constant.SQRT2};
                 break;
             case 2:
-                this.state = new double[]{0,Constant.SQURT2,Constant.SQURT2,0};
+                this.state = new double[]{0,Constant.SQRT2,Constant.SQRT2,0};
                 break;
             case 3:
-                this.state = new double[]{Constant.SQURT2,0,0,-Constant.SQURT2};
+                this.state = new double[]{Constant.SQRT2,0,0,-Constant.SQRT2};
                 break;
             case 4:
-                this.state = new double[]{0,Constant.SQURT2,-Constant.SQURT2,0};
+                this.state = new double[]{0,Constant.SQRT2,-Constant.SQRT2,0};
                 break;
         }
     }

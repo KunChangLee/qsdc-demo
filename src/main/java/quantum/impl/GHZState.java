@@ -4,19 +4,15 @@ import quantum.QuantumState;
 import util.Constant;
 
 /**
- * Created by Zhao Zhe on 2017/9/12.
+ * Created by Zhao Zhe on 2017/12/14.
  */
-public class HardamadState implements QuantumState {
+public class GHZState implements QuantumState {
+    private int particles = 3;
     private double[] state;
-    private int particles = 1;
 
-    public HardamadState(int i){
-        if(i == 0)
-            this.state = new double[]{Constant.SQRT2,Constant.SQRT2};
-        else
-            this.state = new double[]{Constant.SQRT2,-Constant.SQRT2};
+    public GHZState(){
+        this.state = new double[]{Constant.SQRT2,0,0,0,0,0,0,Constant.SQRT2};
     }
-
 
     public double[] getState() {
         return this.state;
@@ -32,6 +28,7 @@ public class HardamadState implements QuantumState {
     }
 
     public void setParticles(int num) {
+
         this.particles = num;
     }
 }

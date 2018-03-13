@@ -36,7 +36,7 @@ public class Panel1 {
         errorLabel2.setText(String.format("%.2f",error[1]*100.0)+"%");
     }
 
-    private String[] strategy = new String[]{AttackStrategy.NONE, AttackStrategy.ENTANGLE_AND_MEASURE};
+    private String[] strategy = new String[]{AttackStrategy.NONE, AttackStrategy.ENTANGLE_AND_MEASURE, AttackStrategy.MODIFY,AttackStrategy.RESEND,AttackStrategy.MEASURE_AND_RESEND};
 
     public Panel1() {
 

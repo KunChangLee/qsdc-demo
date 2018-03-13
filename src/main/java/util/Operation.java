@@ -4,6 +4,7 @@ import quantum.QuantumState;
 import quantum.impl.ClusterState;
 import quantum.impl.ComputaionState;
 import quantum.impl.EaveState;
+import quantum.impl.GHZState;
 
 /**
  * Created by Zhao Zhe on 2017/9/9.
@@ -172,6 +173,39 @@ public class Operation {
     public static void entangleAttack(QuantumState target, QuantumState eave, double alpha, double gama){
         double[][] targetState = transposition(target.getState());
         double[][] eaveState = transposition(eave.getState());
+
+        if(target instanceof GHZState){
+            QuantumState state0 = new ComputaionState(0);
+            QuantumState state1 = new ComputaionState(1);
+            double[][] state00 = transposition(state0.getState());
+            double[][] state11 = transposition(state1.getState());
+
+
+            double[][] temp = operatorTensor(state00,eaveState);
+            double[][] temp1 = operatorTensor(state11,eaveState);
+            if(eave instanceof ComputaionState){
+                temp = innerProduct(Operators.getOperator_E(alpha,gama),temp);
+                target.setParticles(2);
+            }else if(eave instanceof EaveState){
+               double[][] temp0_1 = innerProduct(Operators.getOperator_E2(alpha,gama),temp);
+               double[][] temp0_2 = innerProduct(Operators.getOperator_E2(alpha,gama),temp);
+               double[][] temp0_3 = innerProduct(Operators.getOperator_E2(alpha,gama),temp);
+               double[][] temp1_1 = innerProduct(Operators.getOperator_E2(alpha,gama),temp1);
+               double[][] temp1_2 = innerProduct(Operators.getOperator_E2(alpha,gama),temp1);
+               double[][] temp1_3 = innerProduct(Operators.getOperator_E2(alpha,gama),temp1);
+
+               double[][] part1 = operatorTensor(operatorTensor(temp0_1,temp0_2),temp0_3);
+               double[][] part2 = operatorTensor(operatorTensor(temp1_1,temp1_2),temp1_3);
+
+               part1 = add(part1,part2);
+               part1 = multiple(Constant.SQRT2,part1);
+
+                target.setParticles(9);
+                target.setState(vecToArray(part1));
+
+            }
+            return;
+        }
 
         if(!(target instanceof ClusterState)){
             double[][] temp = operatorTensor(targetState,eaveState);

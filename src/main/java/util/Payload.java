@@ -15,6 +15,7 @@ public class Payload {
     public static final String CHARLIE_RESULT = "charlie";
     public static final String ALICE_RESULT = "alice";
     public static final String CHARLIE_CHECK_RESULT = "charlie_check";
+    public static final String ATTACK_FAC = "attack";
 
 
 

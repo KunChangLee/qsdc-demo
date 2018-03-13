@@ -1,5 +1,7 @@
 package attacker;
 
+import util.Payload;
+
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +17,15 @@ public class Attacker {
     public void attack(Map<String,List> payload){
 
         if(this.strategy.equals(AttackStrategy.ENTANGLE_AND_MEASURE)){
-            Attack.EntangleMeasureAttack(payload);
+            List<Double> fac = payload.get(Payload.ATTACK_FAC);
+            Attack.entangleMeasureAttack(payload,fac.get(0),fac.get(1));
+        }else if(this.strategy.equals(AttackStrategy.MODIFY)){
+            Attack.modifyAttack(payload);
+
+        }else if(this.strategy.equals(AttackStrategy.RESEND)){
+            Attack.resendAttack(payload);
+        }else if(this.strategy.equals(AttackStrategy.MEASURE_AND_RESEND)){
+            Attack.measureResendAttack(payload);
         }
 
     }

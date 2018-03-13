@@ -1,7 +1,9 @@
 package view;
 
 import attacker.AttackStrategy;
+import chart.Scatter3D;
 import chart.TimeSeriesChart;
+import org.jzy3d.plot3d.primitives.Scatter;
 import process.impl.MyProtocol;
 import util.TextAppender;
 
@@ -156,6 +158,7 @@ public class View {
 
     }
 
+
     public void startCommunication(){
         MyProtocol protocol = new MyProtocol();
         logText.setText("");
@@ -164,6 +167,10 @@ public class View {
         protocol.setMessage(this.message,true);
         protocol.setThreshold(this.threshold);
         protocol.setCos(0.3);
+        List<Double> list = new ArrayList<Double>();
+        list.add(0.5);
+        list.add(0.5);
+        protocol.setAttackFac(list);
         protocol.setStrategy(new String[]{this.strategy});
 
         protocol.process();

@@ -21,11 +21,11 @@ public class LogicHardamadState implements QuantumState {
         double[][] st;
         if(i == 0){
             st = Operation.add(one,zero);
-            st = Operation.multiple(Constant.SQURT2,st);
+            st = Operation.multiple(Constant.SQRT2,st);
             this.state = Operation.vecToArray(st);
         }else {
             st = Operation.sub(zero,one);
-            st = Operation.multiple(Constant.SQURT2,st);
+            st = Operation.multiple(Constant.SQRT2,st);
             this.state = Operation.vecToArray(st);
         }
     }

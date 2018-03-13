@@ -86,6 +86,9 @@
                   <model>
                     <item value="无"/>
                     <item value="纠缠测量攻击"/>
+                    <item value="修改攻击"/>
+                    <item value="拦截重发攻击"/>
+                    <item value="测量重发攻击"/>
                   </model>
                 </properties>
               </component>

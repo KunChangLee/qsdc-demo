@@ -39,8 +39,8 @@ public class TimeSeriesChart {
     public static XYSeriesCollection GetCollection(Map<String, List<Double>> map)
     {
         XYSeriesCollection mCollection = new XYSeriesCollection();
-        XYSeries mSeriesFirst = new XYSeries("信道1");
-        XYSeries mSeriesSecond = new XYSeries("信道2");
+        XYSeries mSeriesFirst = new XYSeries("GHZ");
+        XYSeries mSeriesSecond = new XYSeries("W");
         List<Double> data = map.get("data");
         List<Double> result1 = map.get("result1");
         List<Double> result2 = map.get("result2");

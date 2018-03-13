@@ -41,6 +41,21 @@ public class MyProtocol extends AbastractProtocol {
     private Charlie charlie = new Charlie();
     private Bob bob = new Bob();
 
+    public List<Integer> getIdc() {
+        return idc;
+    }
+
+    List<Integer> idc;
+
+    public void setIdc(List<Integer> idc) {
+        this.idc = idc;
+    }
+
+    public void setAttackFac(List<Double> attackFac) {
+
+        this.payload.put(Payload.ATTACK_FAC,attackFac);
+    }
+
     public void setCos(double cos) {
         this.cos = cos;
     }
@@ -90,8 +105,11 @@ public class MyProtocol extends AbastractProtocol {
 
     @Override
     public void authentication() {
-        List<Integer> idc = generateIDC();
-        payload.put(Payload.IDC,idc);
+        if(!payload.containsKey(Payload.IDC)){
+            idc = generateIDC();
+            payload.put(Payload.IDC,idc);
+        }
+
         List<Integer> idb = generateIDB();
         payload.put(Payload.IDB,idb);
         charlie = new Charlie();
@@ -105,7 +123,7 @@ public class MyProtocol extends AbastractProtocol {
         for (int i = 0; i < strategy.length; i++) {
             String str = strategy[i];
 
-            if(strategy.equals(AttackStrategy.NONE))
+            if(str.equals(AttackStrategy.NONE))
                 continue;
             Attacker eave = new Attacker(str);
             charlie.addAttacker(eave);
